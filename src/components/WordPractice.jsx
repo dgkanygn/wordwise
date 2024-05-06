@@ -1,16 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import Data from "../context/Data";
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  Heading,
-  Icon,
-  Input,
-  Progress,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Flex, Heading, Input } from "@chakra-ui/react";
 
 import { IoIosSend } from "react-icons/io";
 import toast, { Toaster } from "react-hot-toast";
@@ -23,22 +13,22 @@ export const WordPractice = () => {
 
   const wordList2 = wordList.map((item) => item.word);
 
-  const generateRandomNumber = (min, max) => {
-    const usedNumbers = new Set();
+  let previousNumber = null;
 
-    const randomizeNumber = () => Math.floor(Math.random() * (max - min) + min);
+  const generateRandomNumber = (min, max, exclude) => {
+    let randomNumber;
 
-    const newRandomNumber = () => {
-      let randomNumber = randomizeNumber();
-      while (usedNumbers.has(randomNumber)) {
-        randomNumber = randomizeNumber();
-      }
-      usedNumbers.add(randomNumber);
+    do {
+      randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    } while (
+      randomNumber === previousNumber ||
+      randomNumber === max ||
+      randomNumber === exclude
+    );
 
-      return randomNumber;
-    };
+    previousNumber = randomNumber;
 
-    return newRandomNumber;
+    return randomNumber;
   };
 
   useEffect(() => {
@@ -52,7 +42,7 @@ export const WordPractice = () => {
       setInput("");
       toast.success("Doğru cevap!");
       setIndex(index + 1);
-      let num = generateRandomNumber(0, wordList.length);
+      let num = generateRandomNumber(0, wordList.length, previousNumber);
       setIndex(num);
     } else {
       {
@@ -87,7 +77,7 @@ export const WordPractice = () => {
         p={10}
       >
         <Flex flexDirection={"column"} align={"center"} gap={10}>
-          <Progress value={60} colorScheme="green" />
+          <Heading>Bu listede {wordList2.length} kelime var</Heading>
 
           <Heading
             bgGradient="linear(to-l, #7928CA, #FF0080)"
